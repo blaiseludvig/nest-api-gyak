@@ -1,7 +1,17 @@
-import { Controller, Delete, Get, Param, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import GetCatsDto from './GetCats.dto';
 import db from './db';
+import CatDataDto from './CatData.dto';
+import { Field, FieldPacket, ResultSetHeader, RowDataPacket } from 'mysql2';
 
 @Controller()
 export class AppController {
@@ -39,5 +49,25 @@ export class AppController {
     DELETE FROM macskak
     WHERE id = ${id};
     `);
+  }
+
+  @Post('/api/cats')
+  async insertUser(@Body() catData: CatDataDto) {
+    const result: [ResultSetHeader, FieldPacket[]] = await db.execute(`
+    INSERT INTO macskak (suly, szem_szin)
+    VALUES (
+    "${catData.suly}",
+    "${catData.szem_szin}"
+    );
+    `);
+
+    const newCatId = result[0].insertId;
+    const [newCat]: [RowDataPacket[], FieldPacket[]] = await db.execute(`
+    SELECT *
+    FROM macskak
+    WHERE id = ${newCatId}
+    `);
+
+    return newCat[0];
   }
 }
