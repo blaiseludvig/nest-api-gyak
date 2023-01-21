@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import GetCatsDto from './GetCats.dto';
 import db from './db';
@@ -31,5 +31,13 @@ export class AppController {
     `);
 
     return cat[0];
+  }
+
+  @Delete('/api/cats/:id')
+  async deleteCat(@Param('id') id: number) {
+    await db.execute(`
+    DELETE FROM macskak
+    WHERE id = ${id};
+    `);
   }
 }
