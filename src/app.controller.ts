@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import GetCatsDto from './GetCats.dto';
 import db from './db';
@@ -20,5 +20,16 @@ export class AppController {
     `);
 
     return { cats: cats };
+  }
+
+  @Get('/api/cats/:id')
+  async oneCat(@Param('id') id: number) {
+    const [cat] = await db.execute(`
+    SELECT suly, szem_szin
+    FROM macskak
+    WHERE id = ${id}
+    `);
+
+    return cat[0];
   }
 }
